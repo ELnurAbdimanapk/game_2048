@@ -1,15 +1,10 @@
-import React, { useState } from 'react';
-import GameBoard from './components/UI/GameBoard';
+import React from 'react'
+import GameFunction from './components/UI/GameFunction'
 
-function App() {
-    const [values, setValues] = useState([
-        [1, 2, 0, 0],
-        [0, , 0, 0],
-        [0, 0, 0, 0],
-        [0, 0, 0, ]
-    ]);
-
-    return <GameBoard values={values} />;
+const App = () => {
+  return (
+    <div><GameFunction/></div>
+  )
 }
 
-export default App;
+export default App

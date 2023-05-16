@@ -11,5 +11,5 @@ export default GameBoard
 
 const StyledTable = styled.table`
 background-color:#FDD400;
-border-radius:20px;
+border-radius:5px;
 margin:auto`

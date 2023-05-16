@@ -1,7 +1,7 @@
 import { styled } from "styled-components";
 
 function Cell(props) {
-    return <StyledTd key={props.key}>{props.value}</StyledTd>;
+    return <StyledTd key={props.key}>{props.value === 0 ? "" : props.value}</StyledTd>;
 }
 export default Cell
 
@@ -14,4 +14,4 @@ width:100px;
 height:100px;
 background-color:#18DB7F;
 border:7px solid #FDD400;
-border-radius:20px;`
+border-radius:15px;`
