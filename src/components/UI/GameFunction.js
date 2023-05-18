@@ -1,75 +1,104 @@
 import React, { useEffect, useState } from "react";
 import GameBoard from "./GameBoard";
-import { styled } from "styled-components";
+import {
+  StyledButton,
+  StyledContainer,
+  StyledHeader,
+} from "../styles/GameStyles";
+import { slideLeft } from "./move/moveToLeft";
+import { slideRight } from "./move/moveToRight";
+import { slideUp } from "./move/moveToUp";
+import { slideDown } from "./move/moveToDown";
+import { getEmptyCell } from "./move/emptycell";
+import { gridChanged } from "./move/changedGrid";
+import { getNewCellValue } from "./move/newCell";
 
 function GameFunction() {
-  const [values, setValues] = useState([
+  // Initial state of the game
+  const [grid, setGrid] = useState([
     [0, 0, 0, 0],
     [0, 0, 0, 0],
     [0, 0, 0, 0],
     [0, 0, 0, 0],
   ]);
 
-  function addNumber() {
-    let options = [];
-    for (let i = 0; i < values.length; i++) {
-      for (let j = 0; j < values[i].length; j++) {
-        if (values[i][j] === 0) {
-          options.push({ x: i, y: j });
+  const generateNewNumber = () => {
+    const emptySpots = [];
+    for (let i = 0; i < grid.length; i++) {
+      for (let j = 0; j < grid[0].length; j++) {
+        if (grid[i][j] === 0) {
+          emptySpots.push([i, j]);
         }
       }
     }
 
-    if (options.length > 0) {
-      let spot = options[Math.floor(Math.random() * options.length)]; //Случайная ячейка
-      let k = Math.random();
-      setValues((prevValues) => {
-        let newValues = JSON.parse(JSON.stringify(prevValues)); 
-        newValues[spot.x][spot.y] = k > 0.1 ? 2 : 4;
-        return newValues;
-      });
+    if (emptySpots.length > 0) {
+      const randomSpot =
+        emptySpots[Math.floor(Math.random() * emptySpots.length)];
+      const randomNumber = Math.random() < 0.9 ? 2 : 4;
+      const newGrid = [...grid];
+      newGrid[randomSpot[0]][randomSpot[1]] = randomNumber;
+      setGrid(newGrid);
     }
-  }
+  };
+
+  // Handle the keypress event
+  const handleKeyPress = (event) => {
+    // Create a new array to avoid mutating the state directly
+    let newGrid = JSON.parse(JSON.stringify(grid));
+
+    switch (event.key) {
+      case "ArrowLeft":
+        newGrid = slideLeft(newGrid);
+        break;
+      case "ArrowRight":
+        newGrid = slideRight(newGrid);
+        break;
+      case "ArrowUp":
+        newGrid = slideUp(newGrid);
+        break;
+      case "ArrowDown":
+        newGrid = slideDown(newGrid);
+        break;
+      default:
+        break;
+    }
+    if (gridChanged(grid, newGrid)) {
+      let cell = getEmptyCell(newGrid);
+      if (cell) {
+        newGrid[cell.row][cell.col] = getNewCellValue();
+      }
+    }
+
+    setGrid(newGrid);
+  };
+
   useEffect(() => {
-    addNumber();
-  }, []);
+    window.addEventListener("keydown", handleKeyPress);
+    return () => {
+      window.removeEventListener("keydown", handleKeyPress);
+    };
+  }, [grid]);
 
-
+  const startNewGame = () => {
+    setGrid([
+      [0, 0, 0, 0],
+      [0, 0, 0, 0],
+      [0, 0, 0, 0],
+      [0, 0, 0, 0],
+    ]);
+    generateNewNumber();
+  };
 
   return (
     <>
       <StyledContainer>
-        <STyledHeader>Game 2048</STyledHeader>
-        <StyledButton>New Game</StyledButton>
-        <GameBoard values={values} />;
+        <StyledHeader>Game 2048</StyledHeader>
+        <StyledButton onClick={startNewGame}>New Game</StyledButton>
+        <GameBoard values={grid} />;
       </StyledContainer>
     </>
   );
 }
 
 export default GameFunction;
-
-// Styless
-
-const STyledHeader = styled.h1`
-  font-size: 72px;
-  text-align: center;
-`;
-
-const StyledButton = styled.button`
-  background-color: #fdd400;
-  width: 150px;
-  height: 50px;
-  margin: auto;
-  border: 1px solid #fdd400;
-  border-radius: 10px;
-  color: #18db7f;
-  font-weight: 900;
-  margin-bottom: 50px;
-`;
-
-const StyledContainer = styled.div`
-  width: 1000px;
-  text-align: center;
-  margin: auto;
-`;

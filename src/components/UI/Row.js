@@ -3,7 +3,7 @@ import Cell from "./Cell";
 
 function Row(props) {
     const cells = props.values.map((value, index) => 
-        <Cell key={index} value={value} />);
+        <Cell key={index} value={value}  />);
     return <tr>{cells}</tr>;
 }
 
